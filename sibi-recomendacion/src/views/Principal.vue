@@ -1,7 +1,6 @@
 <template>
   <v-app>
     <v-main>
-      <v-btn color="success" @click="printear(s1)">print</v-btn>
       <v-row justify="space-between" class="mt-4 mx-4">
         <v-col>
           <v-stepper v-model="stepper" non-linear vertical>
@@ -38,13 +37,13 @@
             </v-stepper-step>
 
             <v-stepper-content step="1">
-              <v-card class="mb-5" height="200px"
+              <v-card class="mb-5"
                 ><div class="ma-1">
                   <span
-                    class="text-h2 font-weight-light"
+                    class="text-h2 font-weight-light ml-2"
                     v-text="sliderPantalla[tamPantallaIndex]"
                   ></span>
-                  <span class="subheading font-weight-light mr-1"
+                  <span class="subheading font-weight-light mr-1 ml-1"
                     >Pulgadas</span
                   >
                   <v-container fluid grid-list-md>
@@ -52,7 +51,6 @@
                       <v-flex>
                         <v-slider
                           :max="sliderPantalla.length - 1"
-                          hint="Tamaño"
                           persistent-hint
                           v-model="tamPantallaIndex"
                           @change="
@@ -83,10 +81,34 @@
             </v-stepper-step>
 
             <v-stepper-content step="2">
-              <v-card
-                color="grey lighten-1"
-                class="mb-12"
-                height="200px"
+              <v-card class="mb-5"
+                ><div class="ma-1">
+                  <span
+                    class="text-h2 font-weight-light ml-2"
+                    v-text="sliderBateria[bateriaIndex]"
+                  ></span>
+                  <span class="subheading font-weight-light mr-1 ml-1"
+                    >mAh</span
+                  >
+                  <v-container fluid grid-list-md>
+                    <v-layout row wrap>
+                      <v-flex>
+                        <v-slider
+                          :max="sliderBateria.length - 1"
+                          persistent-hint
+                          v-model="bateriaIndex"
+                          @change="
+                            printear(bateriaIndex),
+                              setRealValueFromSlider(
+                                sliderBateria,
+                                bateriaIndex,
+                                bateriaTrueValue
+                              )
+                          "
+                        ></v-slider>
+                      </v-flex>
+                    </v-layout>
+                  </v-container></div
               ></v-card>
               <v-btn color="primary" @click="(stepper = 3), (s2 = true)">
                 Siguiente
@@ -103,10 +125,32 @@
             </v-stepper-step>
 
             <v-stepper-content step="3">
-              <v-card
-                color="grey lighten-1"
-                class="mb-12"
-                height="200px"
+              <v-card class="mb-5"
+                ><div class="ma-1">
+                  <span
+                    class="text-h2 font-weight-light ml-2"
+                    v-text="sliderRam[ramIndex]"
+                  ></span>
+                  <span class="subheading font-weight-light mr-1 ml-1">GB</span>
+                  <v-container fluid grid-list-md>
+                    <v-layout row wrap>
+                      <v-flex>
+                        <v-slider
+                          :max="sliderRam.length - 1"
+                          persistent-hint
+                          v-model="ramIndex"
+                          @change="
+                            printear(ramIndex),
+                              setRealValueFromSlider(
+                                sliderRam,
+                                ramIndex,
+                                ramTrueValue
+                              )
+                          "
+                        ></v-slider>
+                      </v-flex>
+                    </v-layout>
+                  </v-container></div
               ></v-card>
               <v-btn color="primary" @click="(stepper = 4), (s3 = true)">
                 Siguiente
@@ -123,10 +167,34 @@
             </v-stepper-step>
 
             <v-stepper-content step="4">
-              <v-card
-                color="grey lighten-1"
-                class="mb-12"
-                height="200px"
+              <v-card class="mb-5"
+                ><div class="ma-1">
+                  <span
+                    class="text-h2 font-weight-light ml-2"
+                    v-text="sliderCamara[camaraIndex]"
+                  ></span>
+                  <span class="subheading font-weight-light mr-1 ml-1"
+                    >Megapíxeles</span
+                  >
+                  <v-container fluid grid-list-md>
+                    <v-layout row wrap>
+                      <v-flex>
+                        <v-slider
+                          :max="sliderCamara.length - 1"
+                          persistent-hint
+                          v-model="camaraIndex"
+                          @change="
+                            printear(camaraIndex),
+                              setRealValueFromSlider(
+                                sliderCamara,
+                                camaraIndex,
+                                camaraTrueValue
+                              )
+                          "
+                        ></v-slider>
+                      </v-flex>
+                    </v-layout>
+                  </v-container></div
               ></v-card>
               <v-btn color="primary" @click="(stepper = 5), (s4 = true)">
                 Siguiente
@@ -146,10 +214,20 @@
             </v-stepper-step>
 
             <v-stepper-content step="5">
-              <v-card
-                color="grey lighten-1"
-                class="mb-12"
-                height="200px"
+              <v-card class="mb-5"
+                ><div class="ma-1">
+                  <span
+                    class="text-h2 font-weight-light ml-2"
+                    v-text="expansionTrueValue ? 'Sí' : 'No'"
+                  ></span>
+                  <span class="subheading font-weight-light mr-1 ml-1"
+                    >Slot de almacenamiento</span
+                  >
+                  <v-switch
+                    class="ml-4"
+                    v-model="expansionTrueValue"
+                    inset
+                  ></v-switch></div
               ></v-card>
               <v-btn color="primary" @click="(stepper = 6), (s5 = true)">
                 Siguiente
@@ -162,15 +240,21 @@
               editable
               edit-icon="$complete"
             >
-              Sistema Operativo
-              <small>Seleccione su sistema operativo de preferencia</small>
+              Sistema Operativo/Marca
+              <small>Seleccione su sistema operativo o marca de preferencia</small>
             </v-stepper-step>
 
             <v-stepper-content step="6">
-              <v-card
-                color="grey lighten-1"
-                class="mb-12"
-                height="200px"
+              <v-card class="mb-5"
+                ><div class="ma-1">
+                  <v-select
+                    v-model="osTrueValue"
+                    :items="osList"
+                    :menu-props="{ maxHeight: '400' }"
+                    multiple
+                    hint="Elige una o varias preferencias"
+                    persistent-hint
+                  ></v-select></div
               ></v-card>
               <v-btn color="primary" @click="(stepper = 7), (s6 = true)">
                 Siguiente
@@ -184,7 +268,7 @@
                 class="mb-12"
                 height="200px"
               ></v-card>
-              <v-btn color="primary" @click="recomendar()"> Siguiente </v-btn>
+              <v-btn color="primary" @click="recomendar()"> Recomendar </v-btn>
             </v-stepper-content>
           </v-stepper>
         </v-col>
@@ -235,8 +319,54 @@ export default {
       7.2, 7.3, 7.6, 7.9, 8.0, 8.1, 8.4, 8.88, 9.6, 9.7, 10.0, 10.1, 10.2, 10.3,
       10.36, 10.4, 10.5, 10.8, 10.9, 11.0, 11.5, 12.4, 12.9, 17.3,
     ],
+    sliderBateria: [
+      1.77, 1.8, 2.2, 2.4, 2.8, 3.3, 3.8, 4.0, 4.5, 4.6, 4.7, 4.95, 5.0, 5.09,
+      5.1, 5.15, 5.2, 5.3, 5.34, 5.4, 5.45, 5.46, 5.5, 5.6, 5.65, 5.67, 5.7,
+      5.71, 5.72, 5.73, 5.8, 5.81, 5.83, 5.84, 5.85, 5.86, 5.88, 5.9, 5.93,
+      5.94, 5.95, 5.97, 5.98, 5.99, 6.0, 6.01, 6.09, 6.1, 6.15, 6.18, 6.19, 6.2,
+      6.21, 6.22, 6.23, 6.24, 6.26, 6.28, 6.3, 6.35, 6.36, 6.38, 6.39, 6.4,
+      6.41, 6.42, 6.43, 6.44, 6.45, 6.47, 6.49, 6.5, 6.51, 6.52, 6.53, 6.55,
+      6.56, 6.57, 6.58, 6.59, 6.6, 6.62, 6.63, 6.65, 6.67, 6.7, 6.72, 6.76,
+      6.78, 6.8, 6.81, 6.82, 6.85, 6.89, 6.9, 6.92, 6.95, 7.0, 7.09, 7.1, 7.12,
+      7.2, 7.3, 7.6, 7.9, 8.0, 8.1, 8.4, 8.88, 9.6, 9.7, 10.0, 10.1, 10.2, 10.3,
+      10.36, 10.4, 10.5, 10.8, 10.9, 11.0, 11.5, 12.4, 12.9, 20,
+    ],
+    sliderRam: [
+      1.77, 1.8, 2.2, 2.4, 2.8, 3.3, 3.8, 4.0, 4.5, 4.6, 4.7, 4.95, 5.0, 5.09,
+      5.1, 5.15, 5.2, 5.3, 5.34, 5.4, 5.45, 5.46, 5.5, 5.6, 5.65, 5.67, 5.7,
+      5.71, 5.72, 5.73, 5.8, 5.81, 5.83, 5.84, 5.85, 5.86, 5.88, 5.9, 5.93,
+      5.94, 5.95, 5.97, 5.98, 5.99, 6.0, 6.01, 6.09, 6.1, 6.15, 6.18, 6.19, 6.2,
+      6.21, 6.22, 6.23, 6.24, 6.26, 6.28, 6.3, 6.35, 6.36, 6.38, 6.39, 6.4,
+      6.41, 6.42, 6.43, 6.44, 6.45, 6.47, 6.49, 6.5, 6.51, 6.52, 6.53, 6.55,
+      6.56, 6.57, 6.58, 6.59, 6.6, 6.62, 6.63, 6.65, 6.67, 6.7, 6.72, 6.76,
+      6.78, 6.8, 6.81, 6.82, 6.85, 6.89, 6.9, 6.92, 6.95, 7.0, 7.09, 7.1, 7.12,
+      7.2, 7.3, 7.6, 7.9, 8.0, 8.1, 8.4, 8.88, 9.6, 9.7, 10.0, 10.1, 10.2, 10.3,
+      10.36, 10.4, 10.5, 10.8, 10.9, 11.0, 11.5, 12.4, 12.9, 30,
+    ],
+    sliderCamara: [
+      1.77, 1.8, 2.2, 2.4, 2.8, 3.3, 3.8, 4.0, 4.5, 4.6, 4.7, 4.95, 5.0, 5.09,
+      5.1, 5.15, 5.2, 5.3, 5.34, 5.4, 5.45, 5.46, 5.5, 5.6, 5.65, 5.67, 5.7,
+      5.71, 5.72, 5.73, 5.8, 5.81, 5.83, 5.84, 5.85, 5.86, 5.88, 5.9, 5.93,
+      5.94, 5.95, 5.97, 5.98, 5.99, 6.0, 6.01, 6.09, 6.1, 6.15, 6.18, 6.19, 6.2,
+      6.21, 6.22, 6.23, 6.24, 6.26, 6.28, 6.3, 6.35, 6.36, 6.38, 6.39, 6.4,
+      6.41, 6.42, 6.43, 6.44, 6.45, 6.47, 6.49, 6.5, 6.51, 6.52, 6.53, 6.55,
+      6.56, 6.57, 6.58, 6.59, 6.6, 6.62, 6.63, 6.65, 6.67, 6.7, 6.72, 6.76,
+      6.78, 6.8, 6.81, 6.82, 6.85, 6.89, 6.9, 6.92, 6.95, 7.0, 7.09, 7.1, 7.12,
+      7.2, 7.3, 7.6, 7.9, 8.0, 8.1, 8.4, 8.88, 9.6, 9.7, 10.0, 10.1, 10.2, 10.3,
+      10.36, 10.4, 10.5, 10.8, 10.9, 11.0, 11.5, 12.4, 12.9, 40,
+    ],
+    osList: ["apple", "samsung", "motorola", "huawei"],
+
     tamPantallaIndex: 44, //para que por defecto este en un valor medio
     tamPantallaTrueValue: 0,
+    bateriaIndex: 0,
+    bateriaTrueValue: 0,
+    ramIndex: 0,
+    ramTrueValue: 0,
+    camaraIndex: 0,
+    camaraTrueValue: 0,
+    expansionTrueValue: false,
+    osTrueValue: "",
 
     /*albumes: [],
     cartas:  [],
@@ -253,7 +383,7 @@ export default {
     },
 
     resetStepper: function () {
-      this.stepper = 1;
+      this.stepper = 6;
       this.s1 = false;
       this.s2 = false;
       this.s3 = false;
