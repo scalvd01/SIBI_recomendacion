@@ -2,8 +2,6 @@
 
 Aplicación de sistema de recomendación de smartphones para SIBI
 
-# sibi-recomendacion
-
 ## Project setup
 
 ```
