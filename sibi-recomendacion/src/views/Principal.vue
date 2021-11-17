@@ -54,12 +54,7 @@
                           persistent-hint
                           v-model="tamPantallaIndex"
                           @change="
-                            printear(tamPantallaIndex),
-                              setRealValueFromSlider(
-                                sliderPantalla,
-                                tamPantallaIndex,
-                                tamPantallaTrueValue
-                              )
+                            printear(tamPantallaIndex)
                           "
                         ></v-slider>
                       </v-flex>
@@ -98,12 +93,7 @@
                           persistent-hint
                           v-model="bateriaIndex"
                           @change="
-                            printear(bateriaIndex),
-                              setRealValueFromSlider(
-                                sliderBateria,
-                                bateriaIndex,
-                                bateriaTrueValue
-                              )
+                            printear(bateriaIndex)
                           "
                         ></v-slider>
                       </v-flex>
@@ -140,12 +130,7 @@
                           persistent-hint
                           v-model="ramIndex"
                           @change="
-                            printear(ramIndex),
-                              setRealValueFromSlider(
-                                sliderRam,
-                                ramIndex,
-                                ramTrueValue
-                              )
+                            printear(ramIndex)
                           "
                         ></v-slider>
                       </v-flex>
@@ -184,12 +169,8 @@
                           persistent-hint
                           v-model="camaraIndex"
                           @change="
-                            printear(camaraIndex),
-                              setRealValueFromSlider(
-                                sliderCamara,
-                                camaraIndex,
-                                camaraTrueValue
-                              )
+                            printear(camaraIndex)
+                              
                           "
                         ></v-slider>
                       </v-flex>
@@ -261,14 +242,17 @@
               </v-btn>
             </v-stepper-content>
 
-            <v-stepper-step step="7"> Recomendacion </v-stepper-step>
+            <v-stepper-step :complete="s7"
+              step="7"
+              editable
+              edit-icon="$complete"> Recomendacion </v-stepper-step>
             <v-stepper-content step="7">
-              <v-card
-                color="grey lighten-1"
-                class="mb-12"
-                height="200px"
-              ></v-card>
-              <v-btn color="primary" @click="recomendar()"> Recomendar </v-btn>
+              <v-card color="grey lighten-4" class="mb-5"
+                ><div class="ma-3">
+                  ¡Lísto! <br>
+                  Ahora ya podemos hacerte una recomendación más precisa.
+                </div></v-card>
+              <v-btn color="primary" @click="recogerSliderData(), (s7 = true), recomendar()"> Recomendar </v-btn>
             </v-stepper-content>
           </v-stepper>
         </v-col>
@@ -356,6 +340,7 @@ export default {
       10.36, 10.4, 10.5, 10.8, 10.9, 11.0, 11.5, 12.4, 12.9, 40,
     ],
     osList: ["apple", "samsung", "motorola", "huawei"],
+    brandList: ["apple", "samsung", "motorola", "huawei"],
 
     tamPantallaIndex: 44, //para que por defecto este en un valor medio
     tamPantallaTrueValue: 0,
@@ -367,6 +352,7 @@ export default {
     camaraTrueValue: 0,
     expansionTrueValue: false,
     osTrueValue: "",
+    brandTrueValue: "",
 
     /*albumes: [],
     cartas:  [],
@@ -381,6 +367,12 @@ export default {
       this.actualizar = array[index];
       console.log(this.actualizar);
     },
+    recogerSliderData: function () {
+      this.tamPantallaTrueValue = this.sliderPantalla[this.tamPantallaIndex]
+      this.bateriaTrueValue = this.sliderBateria[this.bateriaIndex]
+      this.ramTrueValue = this.sliderRam[this.ramIndex]
+      this.camaraTrueValue = this.sliderCamara[this.camaraIndex]
+    },
 
     resetStepper: function () {
       this.stepper = 6;
@@ -392,12 +384,12 @@ export default {
       this.s6 = false;
       this.s7 = false;
       this.s8 = false;
-      console.log("s's reset");
+      console.log("steppers reset");
     },
 
     recomendar: function () {
       //recoger valores
-      console.log("hola");
+      console.log("Tamaño: "+this.tamPantallaTrueValue+"\nBatería: "+this.bateriaTrueValue+"\nRAM: "+this.ramTrueValue+"\nCámara: "+this.camaraTrueValue+"\nExpansión: "+this.expansionTrueValue+"\nOS: "+this.osTrueValue);
       //hacer peticion
     },
 
