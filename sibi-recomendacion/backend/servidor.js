@@ -25,53 +25,12 @@ app.get("/", (req, res) => {
   res.send("home del servidor\nFuncionando");
 });
 
-/*
-app.get("/getDatosSteppers", function (request, response) {
-  console.log("entrado en request datos de steppers");
-
-  var queries = ["MATCH (n:n_display_size) RETURN n",
-    "MATCH (n:Capacidad_bateria) RETURN n",
-    "MATCH (n:n_ram) RETURN n",
-    "MATCH (n:n_camera_pixels) RETURN n",
-    "MATCH (n:expansion) RETURN n",
-    "MATCH (n:os) RETURN n",
-    "MATCH (n:brand_name) RETURN n",
-  ];
-
-  
-
-  var datos = [];
-
-  queries.forEach(function (element, i) {
-    const session = driver.session();
-
-    const resultPromise = session.run(element);
-    console.log(element)
-
-    resultPromise
-      .then((result) => {
-        datos.push(result.records);
-        //console.log(datos.length);
-        if (datos.length == 7) {
-          response.send(datos);
-        }
-        session.close();
-      })
-      .catch((error) => {
-        // handle error
-        console.log(error);
-        session.close();
-      });
-  });
-});*/
-
-
-app.post("/runQuery", function (request, response) {
+app.post("/runQuerySliders", function (request, response) {
   console.log("ejecutando " + request.body.query);
 
   var query = request.body.query;
   var name = request.body.name;
-  console.log(query);
+  //console.log(query);
 
   var datos = [];
 
@@ -85,8 +44,40 @@ app.post("/runQuery", function (request, response) {
       var clean = [];
       datos.forEach((element) => {
         element.forEach((element1) => {
-          console.log(element1.properties);
           clean.push(element1.properties[name]);
+        });
+      });
+      response.send(clean);
+
+      session.close();
+    })
+    .catch((error) => {
+      // handle error
+      console.log(error);
+      session.close();
+    });
+});
+
+app.post("/runQuery", function (request, response) {
+  console.log("ejecutando " + request.body.query);
+
+  var query = request.body.query;
+
+  //console.log(query);
+
+  var datos = [];
+
+  const session = driver.session();
+
+  const resultPromise = session.run(query);
+
+  resultPromise
+    .then((result) => {
+      datos = result.records;
+      var clean = [];
+      datos.forEach((element) => {
+        element.forEach((element1) => {
+          clean.push(element1.properties);
         });
       });
       response.send(clean);

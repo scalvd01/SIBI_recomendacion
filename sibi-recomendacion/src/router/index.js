@@ -23,6 +23,24 @@ const routes = [
 
     component: () => import("../views/Registro.vue"),
   },
+  {
+    path: "/MiPerfil",
+    name: "MiPerfil",
+
+    component: () => import("../views/MiPerfil.vue"),
+  },
+  {
+    path: "/Todo",
+    name: "Todo",
+
+    component: () => import("../views/Todo.vue"),
+  },
+  {
+    path: "/SmartPhone",
+    name: "SmartPhone",
+
+    component: () => import("../views/SmartPhone.vue"),
+  },
 ];
 
 const router = new VueRouter({

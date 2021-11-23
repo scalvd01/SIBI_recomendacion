@@ -1,86 +1,61 @@
 <template>
-  <v-container fluid class="pa-8">
-    <h1>Mi Perfil</h1>
-    <h3 class="pb-2" id="puntos"> Saldo de puntos: {{ $store.getters.currentUser.saldoPuntos }}</h3>
-    <br />
-    <h3>Mis Álbumes:</h3>
-
-    <!---->
-    <v-row>
-      <v-col v-for="(album, i) in usuario.colecciones" :key="i" cols="4">
-        <v-card max-width="344">
-          <v-img :src="album.album.imagen" class="mx-2"></v-img>
-
-          <v-card-title> {{ album.album.nombre }} </v-card-title>
-        </v-card>
-      </v-col>
-    </v-row>
-    <br />
-    <h3>Mis cartas:</h3>
-
-    <v-row>
-      <v-col v-for="(carta, i) in cartas" :key="i" cols="2">
-        <v-card max-width="250">
-          <v-img :src="carta.imagen" class="mx-2"></v-img>
-
-          <v-card-title> {{ carta.nombre }} </v-card-title>
-        </v-card>
-      </v-col></v-row
-    >
-  </v-container>
+  <v-app>
+    <v-main>
+      <div class="mt-8 mx-9">
+        <v-card>
+        hola perfil
+      </v-card>
+      </div>
+      
+    </v-main>
+  </v-app>
 </template>
-
-<!-- -->
 
 <script>
 export default {
-  name: "Principal",
+  name: "MiPerfil",
 
   mounted() {
-    //this.cargarPuntos();
+    
+    /*this.sliderPantalla = this.ejecutarQuerySliders(
+      "MATCH (n:n_display_size) RETURN n",
+      "n_display_size"
+    );
+    this.sliderBateria = this.ejecutarQuerySliders(
+      "MATCH (n:Capacidad_bateria) RETURN n",
+      "capacidad"
+    );
+    this.sliderRam = this.ejecutarQuerySliders(
+      "MATCH (n:n_ram) RETURN n",
+      "n_ram"
+    );
+    this.sliderCamara = this.ejecutarQuerySliders(
+      "MATCH (n:n_camera_pixels) RETURN n",
+      "n_camera_pixels"
+    );
+    this.expansionList = this.ejecutarQuerySliders(
+      "MATCH (n:expansion) RETURN n",
+      "Has_expansion"
+    );
+    this.osList = this.ejecutarQuerySliders("MATCH (n:os) RETURN n", "os");
+    this.brandList = this.ejecutarQuerySliders(
+      "MATCH (n:brand_name) RETURN n",
+      "brand_name"
+    );*/
+
+    //this.traerDatosSteppers();
+    //pedir para los sliders
+    /*this.cargarPuntos();
     this.cargarSocio();
     this.separar();
-    this.$store.dispatch("setStateLogueadoAction", true);
+    this.$store.dispatch("setStateLogueadoAction", true);*/
   },
 
   data: () => ({
-    puntos: 0,
-    albumes: [],
-    cartas:  [],
-    usuario: null,
+    
   }),
   methods: {
-    separar: function() {
-      this.usuario.colecciones.forEach((coleccion) => {
-        this.albumes.push(coleccion.album)
 
-        coleccion.cartas.forEach(carta => {
-          this.cartas.push(carta)
-        });
-      });
-    },
-
-    cargarSocio: function() {
-      var self = this;
-      //traemos al socio
-      var xhttp1 = new XMLHttpRequest();
-      var url = "http://localhost:5000/baseDatos/traerUsrLoggeado";
-      xhttp1.onreadystatechange = function() {
-        if (this.readyState == 4 && this.status == 200) {
-          var user = JSON.parse(this.responseText);
-
-          console.log("Current usuario", user);
-
-          self.$store.dispatch("setCurrentUserAction", user);
-          console.log("Guardado current user desde miperfil");
-
-          self.usuario = user;
-        }
-      };
-
-      xhttp1.open("GET", url, false);
-      xhttp1.send();
-    },
   },
 };
 </script>

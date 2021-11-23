@@ -124,8 +124,8 @@
       <template v-slot:extension>
         <v-tabs centered slider-color="blue">
           <v-tab router to="/"> inicio </v-tab>
-          <v-tab router to="/"> Todo </v-tab>
-          <v-tab router to="/"> perfil </v-tab>
+          <v-tab router to="/Todo"> Todo </v-tab>
+          <v-tab router to="/MiPerfil"> perfil </v-tab>
         </v-tabs>
       </template>
     </v-toolbar>
