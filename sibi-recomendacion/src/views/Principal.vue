@@ -8,7 +8,28 @@
             <v-expansion-panel>
               <v-expansion-panel-header> Normal </v-expansion-panel-header>
               <v-expansion-panel-content>
-                Lorem ipsum
+                <v-divider></v-divider>
+                <div class="mt-4">
+                  Gama:
+                  <v-btn
+                    color="red lighten-1"
+                    class="ml-2"
+                    @click="queriesNormal(1)"
+                    >Baja</v-btn
+                  >
+                  <v-btn
+                    color="yellow lighten-1"
+                    class="ml-2"
+                    @click="queriesNormal(2)"
+                    >media</v-btn
+                  >
+                  <v-btn
+                    color="green lighten-1"
+                    class="ml-2"
+                    @click="queriesNormal(3)"
+                    >alta</v-btn
+                  >
+                </div>
               </v-expansion-panel-content>
             </v-expansion-panel>
             <v-expansion-panel>
@@ -443,7 +464,6 @@ export default {
   },
 
   data: () => ({
-    
     preparado: false,
     //para focusear a un stepper en concreto
     stepper: 0,
@@ -497,6 +517,10 @@ export default {
     ],
   }),
   methods: {
+    printear: function (a) {
+      console.log(a);
+    },
+
     recogerSliderData: function () {
       this.tamPantallaTrueValue = this.sliderPantalla[this.tamPantallaIndex];
       this.bateriaTrueValue = this.sliderBateria[this.bateriaIndex];
@@ -719,6 +743,11 @@ export default {
 
       if (request.status === 200) {
         var data = JSON.parse(request.responseText);
+
+        if (data.length == 0) {
+          console.log("vacio");
+          data = this.recomendacionCombinada(a);
+        }
         this.telefonoRecomendado = data.shift();
         this.otrasRecomendaciones = data;
         this.preparado = true;
@@ -730,9 +759,151 @@ export default {
       }
     },
 
+    recomendacionCombinada: function (query) {
+      console.log("recomendacion Combinada");
+      var aux = query.split("  ");
+      var r = aux.pop();
+      r = r.replace("LIMIT 10", "");
+      var aux1 = [];
+      aux.forEach((elem) => {
+        elem += " " + r;
+        aux1.push(elem);
+      });
+
+      var nuevaQuery = aux1.join(" UNION ALL ").replace(/, ([^,]*)$/, " $1"); //para intercalar un union all entre todas las query menos en la ultima
+      console.log("ejecutando " + nuevaQuery);
+
+      //hacemos la peticion con la nueva query
+      var request = new XMLHttpRequest();
+
+      request.open("POST", "http://localhost:5000/runQuery", false); // `false` makes the request synchronous
+      request.setRequestHeader("Access-Control-Allow-Headers", "*");
+      request.setRequestHeader(
+        "Content-type",
+        "application/json; charset=utf-8"
+      );
+      request.setRequestHeader("Access-Control-Allow-Origin", "*");
+      request.send(JSON.stringify({ query: nuevaQuery }));
+
+      if (request.status === 200) {
+        var data = JSON.parse(request.responseText);
+        //console.log(data); //ya esta ordenado desc
+
+        var arr_ids = []; //obtenemos un array de ids de data
+        data.forEach(function (elem, index) {
+          arr_ids.push(elem.id);
+        });
+        //console.log(arr_ids);
+
+        //contamos las ocurrencias en el array de ids
+        const occurrences = arr_ids.reduce(function (acc, curr) {
+          return acc[curr] ? ++acc[curr] : (acc[curr] = 1), acc;
+        }, {});
+
+        //console.log(occurrences); //nos devuelve un obj y lo devolvemos a arr
+        var ar = Object.entries(occurrences);
+        //console.log(ar);
+        //ordenamos ese array segun las ocurrencias
+        var sortedArray = ar.sort(function (a, b) {
+          return b[1] - a[1];
+        });
+        //console.log(sortedArray);
+        //ahora coger todos los tel que tengan el mismo n de ocurrencias que el primero, ver a ver si los scores estan bien y si no ordenarlos y devolverlos
+        var topOcurr = sortedArray[0][1];
+        var topOcurrArray = [];
+        sortedArray.forEach((element) => {
+          if (element[1] == topOcurr) {
+            topOcurrArray.push(element[0]);
+          }
+        });
+        //console.log(topOcurrArray);
+
+        //buscamos cada objeto que tiene el id de topocurraray y lo metemos en otro
+        var topOcurrObjArray = [];
+
+        topOcurrArray.forEach((id) => {
+          for (let i = 0; i < data.length; i++) {
+            const obj = data[i];
+            if (id == obj["id"]) {
+              topOcurrObjArray.push(obj);
+              break;
+            }
+          }
+        });
+        //console.log(topOcurrObjArray);
+
+        //ordenamos por score
+        var clean = topOcurrObjArray.sort(function (a, b) {
+          return b["device_score"] - a["device_score"];
+        });
+        if (clean.length >= 10) {
+          //si tiene mas de 10 devolvemos solo 10
+
+          clean.length = 10;
+        }
+        console.log("clean");
+        console.log(clean);
+        return clean;
+      }
+    },
+
+    queriesNormal: function (val) {
+      var query = "";
+      if (val == 1) {
+        console.log("baja");
+        query +=
+          "MATCH (n:SmartPhone) WHERE n.device_score<784 RETURN n ORDER BY n.device_score DESC  ";
+      }
+      if (val == 2) {
+        console.log("media");
+        query +=
+          "MATCH (n:SmartPhone) WHERE n.device_score>784 AND n.device_score<1459 RETURN n ORDER BY n.device_score DESC  ";
+      }
+      if (val == 3) {
+        console.log("alta");
+        query +=
+          "MATCH (n:SmartPhone) WHERE n.device_score>1459 RETURN n ORDER BY n.device_score DESC  ";
+      }
+      //si hay un usuario logueado hacer combinada si no no
+      // console.log(this.$store.getters.logueado)
+      if (this.$store.getters.logueado) {
+        console.log("combi");
+
+        //hacer peticion combinada
+
+        //hacer funcion para sacar los datos de los favoritos del usuario
+        
+      } else {
+        //hacer peticion normal
+
+        var request = new XMLHttpRequest();
+
+        request.open("POST", "http://localhost:5000/runQuery", false); // `false` makes the request synchronous
+        request.setRequestHeader("Access-Control-Allow-Headers", "*");
+        request.setRequestHeader(
+          "Content-type",
+          "application/json; charset=utf-8"
+        );
+        request.setRequestHeader("Access-Control-Allow-Origin", "*");
+        request.send(JSON.stringify({ query: query }));
+
+        if (request.status === 200) {
+          var data = JSON.parse(request.responseText);
+          if (data.length > 10) {
+            data.length = 10;
+          }
+          this.telefonoRecomendado = data.shift();
+          this.otrasRecomendaciones = data;
+          this.preparado = true;
+          console.log(data);
+
+          //return data;
+        }
+      }
+    },
     irASmartPhone: function (SmartPhone) {
-      console.log("aaaaaaa");
-      console.log(SmartPhone);
+      console.log("yendo al smartphone");
+      //console.log(SmartPhone);
       this.$store.dispatch("setCurrentPhoneAction", SmartPhone);
       this.$router.push({ path: "/SmartPhone" });
       //console.log(this.$store.getters.currentPhone);

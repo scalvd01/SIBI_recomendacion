@@ -45,7 +45,7 @@
           </div>
           <div class="mx-16 mt-5 pb-5">
             <span class="text-h5">Características</span>
-            <div>s</div>
+            <div v-for="(spec, index) in specs" :key="index">{{ spec }}</div>
           </div>
         </v-card>
       </div>
@@ -59,25 +59,41 @@ export default {
 
   mounted() {
     this.cargarSmartPhone();
+    this.cleanSpecs();
   },
 
   data: () => ({
     faved: false,
-    SmartPhone: [
-      {
+    specs: [],
+    SmartPhone: {
         name: "",
         picture: "",
         os: "",
         brand_name: "",
         me_gusta: 0,
       },
-    ],
   }),
   methods: {
     cargarSmartPhone: function () {
       this.SmartPhone = this.$store.getters.currentPhone;
       console.log(this.$store.getters.currentPhone);
       console.log(this.SmartPhone);
+    },
+    cleanSpecs: function () {
+      var s = this.SmartPhone.specifications;
+      s = s.split(',"');
+      s.forEach((x) => {
+        
+        x = x.replace("{", "");
+        x = x.replace("}", "");
+        x = x.replace("\\", "");
+        x = x.replace('"', "");
+        x = x.replace(':"', ": ");
+        x = x.replace('"', "");console.log(x);
+        this.specs.push(x)
+      });
+       
+      console.log(s);
     },
   },
 };
