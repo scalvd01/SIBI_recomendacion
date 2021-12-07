@@ -1,5 +1,5 @@
 <template>
-  <v-content>
+  <v-main>
     <v-container class="fill-height" fluid>
       <v-row align="center" justify="center">
         <v-col cols="12" sm="8" md="4">
@@ -49,7 +49,10 @@
 
             <v-card-actions>
               <template>
-                <v-btn color="blue" @click="mandarDatos()">Registro</v-btn>
+                <v-btn color="primary" @click="mandarDatos()">Registro</v-btn>
+                <v-snackbar v-model="snackbar" :timeout="2000">
+                  Registrado
+                </v-snackbar>
               </template>
             </v-card-actions>
           </v-card>
@@ -64,7 +67,7 @@
         &copy;2021 — <strong>Phone REC</strong>
       </v-card-text>
     </v-footer>
-  </v-content>
+  </v-main>
 </template>
 
 <script>
@@ -78,6 +81,7 @@ export default {
       nombre: "",
       apellidos: "",
       DNI: "",
+      snackbar: false,
       rules: {
         required: (value) => !!value || "Required.",
         counter: (value) => value.length <= 20 || "Max 20 characters",
@@ -95,36 +99,46 @@ export default {
     },
 
     mandarDatos: function () {
-      console.log("gracias al v-model");
-      console.log("Nombre =", this.name);
-      console.log("Palabra de paso = ", this.password);
+      console.log("entrado");
+      var query = "";
+      query +=
+        "CREATE (n:user {nombre: '" +
+        this.nombre +
+        "', apellidos: '" +
+        this.apellidos +
+        "', usuario: '" +
+        this.name +
+        "', pass: '" +
+        this.password +
+        "', historial:[], favoritos:[], histids:'', favsids:''}) RETURN n";
 
-      //peticion post que comprueba el loggueo
-      var xhttp = new XMLHttpRequest();
-      var url = "http://localhost:5000/baseDatos/registro";
-      xhttp.onreadystatechange = function () {
-        if (this.readyState == 4 && this.status == 200) {
-          console.log(this.responseText);
-          window.location.href = "/#/Login";
-        }
-      };
+      console.log("ejecutando " + query);
 
-      xhttp.open("POST", url, true);
-      xhttp.setRequestHeader("Access-Control-Allow-Headers", "*");
-      xhttp.setRequestHeader("Content-type", "application/json; charset=utf-8");
-      xhttp.setRequestHeader("Access-Control-Allow-Origin", "*");
+      var request = new XMLHttpRequest();
 
-      xhttp.send(
+      request.open("POST", "http://localhost:5000/registrar", false); // `false` makes the request synchronous
+      request.setRequestHeader("Access-Control-Allow-Headers", "*");
+      request.setRequestHeader(
+        "Content-type",
+        "application/json; charset=utf-8"
+      );
+      request.setRequestHeader("Access-Control-Allow-Origin", "*");
+      request.send(
         JSON.stringify({
-          usuario: this.name,
-          contrasenya: this.password,
-          nombre: this.nombre,
-          apellidos: this.apellidos,
-          DNI: this.DNI,
-          saldoPuntos: 20,
-          esAdmin: false,
+          query: query,
         })
       );
+
+      if (request.status === 200) {
+        var data = JSON.parse(request.responseText);
+        //devolver el user meterlo en la store y volver a login
+        console.log("hecho");
+
+        console.log(data);
+        this.snackbar = true;
+
+        this.$router.push({ path: "/Login" });
+      }
     },
   },
   components: {},

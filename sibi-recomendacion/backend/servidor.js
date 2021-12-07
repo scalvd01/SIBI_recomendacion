@@ -91,3 +91,26 @@ app.post("/runQuery", function (request, response) {
       session.close();
     });
 });
+app.post("/registrar", function (request, response) {
+  console.log("ejecutando " + request.body.query);
+
+  var query = request.body.query;
+
+  const session = driver.session();
+
+  const resultPromise = session.run(query);
+
+  resultPromise
+    .then((result) => {
+      var data = result.records[0]._fields[0].properties
+      //console.log(data);
+      response.send(data);
+
+      session.close();
+    })
+    .catch((error) => {
+      // handle error
+      console.log(error);
+      session.close();
+    });
+});

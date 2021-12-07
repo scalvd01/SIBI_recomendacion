@@ -20,7 +20,7 @@ export default new Vuex.Store({
     },
     setCurrentPhone(state, data) {
       state.currentPhone = data;
-      console.log("current coleccion", state.currentPhone);
+      console.log("current phone", state.currentPhone);
     },
     setCurrentUser(state, data) {
       console.log(data)

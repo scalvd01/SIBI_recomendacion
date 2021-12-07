@@ -1,12 +1,95 @@
 <template>
   <v-app>
     <v-main>
-      <div class="mt-8 mx-9">
-        <v-card>
-        hola perfil
-      </v-card>
-      </div>
-      
+      <v-container fluid class="pa-8">
+        <div class="mt-8 mx-9">
+          <h3>Mis datos:</h3>
+          <div class="d-flex pl-1 py-3">
+            <v-card
+              ><div class="ma-3">
+                Nombre: {{ usuario.nombre }} <br />
+                Apellidos: {{ usuario.apellidos }}<br />
+                Usuario: {{ usuario.usuario }}
+              </div>
+            </v-card>
+          </div>
+          <h3 class="mb-4">Mis favoritos:</h3>
+
+          <!---->
+          <v-slide-group show-arrows>
+            <v-slide-item v-for="(d, i) in favs" :key="i">
+              <v-card class="ma-2">
+                <v-img
+                  :src="d.picture"
+                  class="mt-1"
+                  height="250"
+                  contain
+                ></v-img>
+
+                <v-card-title> {{ d.name }} </v-card-title>
+                <div class="d-flex justify-center pb-3">
+                  <v-btn
+                    color="success"
+                    text
+                    elevation="1"
+                    @click="irASmartPhone(d)"
+                  >
+                    ver teléfono
+                  </v-btn>
+                </div>
+              </v-card>
+            </v-slide-item>
+          </v-slide-group>
+          <br />
+
+          <h3 class="mb-4">Historial:</h3>
+
+          <v-slide-group show-arrows>
+            <v-slide-item v-for="(d, i) in historial" :key="i">
+              <v-card class="ma-2">
+                <v-img
+                  :src="d.picture"
+                  class="mt-1"
+                  height="250"
+                  contain
+                ></v-img>
+
+                <v-card-title> {{ d.name }} </v-card-title>
+                <div class="d-flex justify-center pb-3">
+                  <v-btn
+                    color="success"
+                    text
+                    elevation="1"
+                    @click="irASmartPhone(d)"
+                  >
+                    ver teléfono
+                  </v-btn>
+                </div>
+              </v-card>
+            </v-slide-item>
+          </v-slide-group>
+
+          <!--<v-row>
+            <v-col v-for="(d, i) in historial" :key="i" cols="2">
+              <v-card max-width="250">
+                <v-img :src="d.picture" class="mx-2"></v-img>
+
+                <v-card-title> {{ d.name }} </v-card-title>
+                <div class="d-flex justify-center pb-3">
+                  <v-btn
+                    color="success"
+                    text
+                    elevation="1"
+                    @click="irASmartPhone(d)"
+                  >
+                    ver teléfono
+                  </v-btn>
+                </div>
+              </v-card>
+            </v-col></v-row
+          >-->
+        </div>
+      </v-container>
     </v-main>
   </v-app>
 </template>
@@ -16,46 +99,28 @@ export default {
   name: "MiPerfil",
 
   mounted() {
-    
-    /*this.sliderPantalla = this.ejecutarQuerySliders(
-      "MATCH (n:n_display_size) RETURN n",
-      "n_display_size"
-    );
-    this.sliderBateria = this.ejecutarQuerySliders(
-      "MATCH (n:Capacidad_bateria) RETURN n",
-      "capacidad"
-    );
-    this.sliderRam = this.ejecutarQuerySliders(
-      "MATCH (n:n_ram) RETURN n",
-      "n_ram"
-    );
-    this.sliderCamara = this.ejecutarQuerySliders(
-      "MATCH (n:n_camera_pixels) RETURN n",
-      "n_camera_pixels"
-    );
-    this.expansionList = this.ejecutarQuerySliders(
-      "MATCH (n:expansion) RETURN n",
-      "Has_expansion"
-    );
-    this.osList = this.ejecutarQuerySliders("MATCH (n:os) RETURN n", "os");
-    this.brandList = this.ejecutarQuerySliders(
-      "MATCH (n:brand_name) RETURN n",
-      "brand_name"
-    );*/
-
-    //this.traerDatosSteppers();
-    //pedir para los sliders
-    /*this.cargarPuntos();
-    this.cargarSocio();
-    this.separar();
-    this.$store.dispatch("setStateLogueadoAction", true);*/
+    this.getDatos();
   },
 
   data: () => ({
-    
+    usuario: [],
+    favs: [],
+    historial: [],
   }),
   methods: {
-
+    getDatos: function () {
+      var user = this.$store.getters.currentUser;
+      this.usuario = user;
+      this.favs = user.favoritos;
+      this.historial = user.historial;
+    },
+    irASmartPhone: function (SmartPhone) {
+      console.log("yendo al smartphone");
+      //console.log(SmartPhone);
+      this.$store.dispatch("setCurrentPhoneAction", SmartPhone);
+      this.$router.push({ path: "/SmartPhone" });
+      //console.log(this.$store.getters.currentPhone);
+    },
   },
 };
 </script>

@@ -48,8 +48,7 @@
                     >
                       <template v-slot:activator="{ on, attrs }">
                         <v-btn
-                          color="recuperarclave"
-                          dark
+                          text
                           v-bind="attrs"
                           v-on="on"
                           class="text-decoration-underline"
@@ -92,9 +91,9 @@
               </v-card-actions>
             </v-card>
             <v-spacer class="pt-2"></v-spacer>
-            <v-card width="600" class="mx-auto ">
+            <v-card width="600" class="mx-auto">
               <v-card-title
-                style="font-size:20px; padding-top: 15px; padding-left: 10px;"
+                style="font-size: 20px; padding-top: 15px; padding-left: 10px"
                 >¿Aún no está registrado?
                 <v-btn
                   right
@@ -105,6 +104,9 @@
                   to="/Registro"
                   >Registrarse</v-btn
                 >
+                <v-snackbar v-model="snackbar" :timeout="2000">
+                  Datos incorrectos
+                </v-snackbar>
               </v-card-title>
             </v-card>
           </v-col>
@@ -135,61 +137,84 @@ export default {
       showPassword: false,
       name: "",
       password: "",
+      snackbar: false,
     };
   },
   methods: {
-    mandarDatos: function() {
-      var self = this;
-
+    mandarDatos: function () {
       console.log("Nombre =", this.name);
-      console.log("Palabra de paso = ", this.password);
+      console.log("Pass = ", this.password);
 
-      //peticion post que comprueba el loggueo
-      var xhttp = new XMLHttpRequest();
-      var url = "http://localhost:5000/baseDatos/login";
-      xhttp.onreadystatechange = function() {
-        if (this.readyState == 4 && this.status == 200) {
-          if (this.responseText == "NO") {
-            document.getElementById("error").style.display = "block";
-          } else if (this.responseText == "SI") {
-            self.$store.dispatch("changeStateLogueadoAction");
-            console.log("cambiado estado logueado desde login");
-            self.$router.push({ path: "/MiPerfil" });
-          } else if (this.responseText == "ADMIN") {
-            self.$store.dispatch("changeStateLogueadoAction");
-            console.log("cambiado estado logueado desde login");
-            window.location.href = "/#/Administracion";
-          }
+      var query =
+        "MATCH (n:user) WHERE n.usuario='" +
+        this.name +
+        "' AND n.pass='" +
+        this.password +
+        "' RETURN n";
 
-          //traemos al socio
-          var xhttp1 = new XMLHttpRequest();
-          var url = "http://localhost:5000/baseDatos/traerUsrLoggeado";
-          xhttp1.onreadystatechange = function() {
-            if (this.readyState == 4 && this.status == 200) {
-              var user = JSON.parse(this.responseText);
+      console.log(query);
 
-              console.log("Current usuario", user);
+      var request = new XMLHttpRequest();
 
-              self.$store.dispatch("setCurrentUserAction", user);
-              console.log("Guardado current user desde login");
-            }
-          };
+      request.open("POST", "http://localhost:5000/runQuery", false); // `false` makes the request synchronous
+      request.setRequestHeader("Access-Control-Allow-Headers", "*");
+      request.setRequestHeader(
+        "Content-type",
+        "application/json; charset=utf-8"
+      );
+      request.setRequestHeader("Access-Control-Allow-Origin", "*");
+      request.send(JSON.stringify({ query: query }));
 
-          xhttp1.open("GET", url, false);
-          xhttp1.send();
+      if (request.status === 200) {
+        var data = JSON.parse(request.responseText);
+
+        if (data.length == 0) {
+          this.snackbar = true;
+        } else {
+
+          var u = data[0]
+          var f = u.favsids.split(',')
+          var h = u.histids.split(',')
+
+          
+          f.forEach(id => {
+            u.favoritos.push(this.peticion("match (n:SmartPhone) where n.id='"+id+"' return n"))
+          });
+          h.forEach(id => {
+            u.historial.push(this.peticion("match (n:SmartPhone) where n.id='"+id+"' return n"))
+          });
+
+          this.$store.dispatch("setCurrentUserAction", u);
+          this.$store.dispatch("changeStateLogueadoAction");
+          this.$router.push({ path: "/" });
         }
-      };
 
-      xhttp.open("POST", url, true);
-      xhttp.setRequestHeader("Access-Control-Allow-Headers", "*");
-      xhttp.setRequestHeader("Content-type", "application/json; charset=utf-8");
-      xhttp.setRequestHeader("Access-Control-Allow-Origin", "*");
-
-      xhttp.send(JSON.stringify({ user: this.name, password: this.password }));
+        console.log(data[0]);
+      }
     },
 
-    login: function() {
+    login: function () {
       console.log("loggeando");
+    },
+    peticion: function (query) {
+      var request = new XMLHttpRequest();
+
+      request.open("POST", "http://localhost:5000/runQuery", false); // `false` makes the request synchronous
+      request.setRequestHeader("Access-Control-Allow-Headers", "*");
+      request.setRequestHeader(
+        "Content-type",
+        "application/json; charset=utf-8"
+      );
+      request.setRequestHeader("Access-Control-Allow-Origin", "*");
+      request.send(JSON.stringify({ query: query }));
+
+      if (request.status === 200) {
+        var data = JSON.parse(request.responseText);
+        //console.log(data[0])
+
+        return data[0]
+      }
+      
     },
   },
   components: {},

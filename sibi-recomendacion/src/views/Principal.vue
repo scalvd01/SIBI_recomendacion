@@ -4,10 +4,20 @@
       <v-row justify="space-between" class="mt-4 mx-4">
         <v-col
           ><h2>Modo de recomendación</h2>
-          <v-expansion-panels>
+          <v-expansion-panels v-model="panel">
             <v-expansion-panel>
-              <v-expansion-panel-header> Normal </v-expansion-panel-header>
-              <v-expansion-panel-content>
+              <v-expansion-panel-header class="font-weight-medium">
+                Normal
+              </v-expansion-panel-header>
+              <v-expansion-panel-content
+                ><span>Selecciona tu preferencia</span>
+                <div
+                  v-if="!$store.getters.logueado"
+                  class="caption font-italic"
+                >
+                  *Si inicias sesión el sistema tendrá en cuenta tus favoritos
+                  para mejorar la recomendación
+                </div>
                 <v-divider></v-divider>
                 <div class="mt-4">
                   Gama:
@@ -30,10 +40,70 @@
                     >alta</v-btn
                   >
                 </div>
+                <v-divider class="my-4"></v-divider>
+                <div class="mt-4">
+                  Uso:
+                  <div>
+                    <v-row class="ml-12 mb-3">
+                      <v-btn
+                        color="blue lighten-2"
+                        class="mx-2"
+                        @click="queriesNormal(4)"
+                        >Fotografía <v-icon right>mdi-camera</v-icon></v-btn
+                      >
+                      <span class="mt-2"
+                        >Si necesitas un teléfono que haga las mejores
+                        fotos</span
+                      >
+                    </v-row>
+                    <v-row class="ml-12 mb-3">
+                      <v-btn
+                        color="blue lighten-2"
+                        class="mx-2"
+                        @click="queriesNormal(5)"
+                        >Multimedia<v-icon right
+                          >mdi-cellphone-screenshot</v-icon
+                        ></v-btn
+                      >
+                      <span class="mt-2"
+                        >Si lo que quieres es un pantalla grande para ver tus
+                        vídeos y series</span
+                      >
+                    </v-row>
+                    <v-row class="ml-12 mb-3">
+                      <v-btn
+                        color="blue lighten-2"
+                        class="mx-2"
+                        @click="queriesNormal(6)"
+                        >Duradero<v-icon right
+                          >mdi-battery-charging</v-icon
+                        ></v-btn
+                      >
+                      <span class="mt-2"
+                        >Para que llegues al final del día con suficiente
+                        batería</span
+                      >
+                    </v-row>
+                    <v-row class="ml-12 mb-3">
+                      <v-btn
+                        color="blue lighten-2"
+                        class="mx-2"
+                        @click="queriesNormal(7)"
+                        >Juegos<v-icon right>mdi-gamepad-variant</v-icon></v-btn
+                      >
+                      <span class="mt-2"
+                        >Para que juegues a los mejores juegos de forma
+                        fluida</span
+                      >
+                    </v-row>
+                  </div>
+                </div>
               </v-expansion-panel-content>
             </v-expansion-panel>
             <v-expansion-panel>
-              <v-expansion-panel-header> Avanzado </v-expansion-panel-header>
+              <v-expansion-panel-header class="font-weight-medium">
+                Avanzado
+              </v-expansion-panel-header>
               <v-expansion-panel-content>
                 <v-stepper v-model="stepper" non-linear vertical>
                   <v-stepper-step
@@ -334,7 +404,7 @@
                             v-text="telefonoRecomendado.brand_name"
                           ></v-card-subtitle>
 
-                          <v-card-actions class="ml-2 mt-5">
+                          <v-card-actions class="ml-2">
                             <div>
                               <v-btn
                                 color="success"
@@ -388,7 +458,7 @@
                             v-text="otrasRecomendaciones[index].brand_name"
                           ></v-card-subtitle>
 
-                          <v-card-actions class="ml-2 mt-5">
+                          <v-card-actions class="ml-2">
                             <div>
                               <v-btn
                                 color="success"
@@ -454,16 +524,10 @@ export default {
       "MATCH (n:brand_name) RETURN n",
       "brand_name"
     );
-
-    //this.traerDatosSteppers();
-    //pedir para los sliders
-    /*this.cargarPuntos();
-    this.cargarSocio();
-    this.separar();
-    this.$store.dispatch("setStateLogueadoAction", true);*/
   },
 
   data: () => ({
+    panel: 0,
     preparado: false,
     //para focusear a un stepper en concreto
     stepper: 0,
@@ -754,6 +818,9 @@ export default {
         console.log(data);
         console.log(this.telefonoRecomendado);
         console.log(this.otrasRecomendaciones);
+        if (this.$store.getters.logueado) {
+          this.addAlHistorial(this.telefonoRecomendado);
+        }
 
         //return data;
       }
@@ -832,10 +899,12 @@ export default {
         });
         //console.log(topOcurrObjArray);
 
-        //ordenamos por score
-        var clean = topOcurrObjArray.sort(function (a, b) {
-          return b["device_score"] - a["device_score"];
-        });
+        //ordenamos por score y "me gusta"
+        var clean = topOcurrObjArray.sort(
+          (a, b) =>
+            b["me_gusta"] - a["me_gusta"] ||
+            b["device_score"] - a["device_score"]
+        );
         if (clean.length >= 10) {
           //si tiene mas de 10 devolvemos solo 10
 
@@ -849,32 +918,210 @@ export default {
 
     queriesNormal: function (val) {
       var query = "";
+      var orden = "";
       if (val == 1) {
         console.log("baja");
+        orden = "device_score";
         query +=
           "MATCH (n:SmartPhone) WHERE n.device_score<784 RETURN n ORDER BY n.device_score DESC  ";
       }
       if (val == 2) {
         console.log("media");
+        orden = "device_score";
         query +=
           "MATCH (n:SmartPhone) WHERE n.device_score>784 AND n.device_score<1459 RETURN n ORDER BY n.device_score DESC  ";
       }
       if (val == 3) {
         console.log("alta");
+        orden = "device_score";
         query +=
           "MATCH (n:SmartPhone) WHERE n.device_score>1459 RETURN n ORDER BY n.device_score DESC  ";
       }
-      //si hay un usuario logueado hacer combinada si no no
-      // console.log(this.$store.getters.logueado)
-      if (this.$store.getters.logueado) {
-        console.log("combi");
+      if (val == 4) {
+        console.log("fotografía");
+        orden = "n_camera_pixels";
+        query +=
+          "MATCH (n:SmartPhone) RETURN n ORDER BY n.n_camera_pixels DESC LIMIT 20  ";
+      }
+      if (val == 5) {
+        console.log("multimedia");
+        orden = "n_display_size";
+        query +=
+          "MATCH (n:SmartPhone) RETURN n ORDER BY n.n_display_size DESC LIMIT 20  ";
+      }
+      if (val == 6) {
+        console.log("mucho uso");
+        orden = "n_battery_size";
+        query +=
+          "MATCH (n:SmartPhone) RETURN n ORDER BY n.n_battery_size DESC LIMIT 20  ";
+      }
+      if (val == 7) {
+        console.log("juegos");
+        orden = "n_ram";
+        query +=
+          "MATCH (n:SmartPhone) RETURN n ORDER BY n.n_ram DESC LIMIT 20  ";
+      }
 
-        //hacer peticion combinada
+      //hacemos la peticion normal que nos devuelve el rango de gama
 
-        //hacer funcion para sacar los datos de los favoritos del usuario
+      var request = new XMLHttpRequest();
+
+      request.open("POST", "http://localhost:5000/runQuery", false); // `false` makes the request synchronous
+      request.setRequestHeader("Access-Control-Allow-Headers", "*");
+      request.setRequestHeader(
+        "Content-type",
+        "application/json; charset=utf-8"
+      );
+      request.setRequestHeader("Access-Control-Allow-Origin", "*");
+      request.send(JSON.stringify({ query: query }));
+
+      if (request.status === 200) {
+        var data = JSON.parse(request.responseText);
+
+        //console.table(data, ["me_gusta", orden, "device_score",  "id"]);
+
+
+        if (this.$store.getters.logueado) {
+          //QUITAR EL ! ES SOLO PARA PROBAR
+          if (this.$store.getters.currentUser.favoritos.length != 0) {
+            data = this.ordenarPorParecidoDeFavs(data, orden);
+          }
+        }
+
+        if (data.length > 10) {
+          data.length = 10;
+        }
         
-      } else {
-        //hacer peticion normal
+        this.telefonoRecomendado = data.shift();
+        this.otrasRecomendaciones = data;
+        this.preparado = true;
+        //console.log(data);
+        if (this.$store.getters.logueado) {
+          this.addAlHistorial(this.telefonoRecomendado);
+        }
+
+        //return data;
+      }
+    },
+    ordenarPorParecidoDeFavs: function (data, orden) {
+      console.log("ordenarPorParecidoDeFavs");
+
+      //primero conseguimos la lista de las características de los telefonos de fav según spec y hacer un obj con un numero de cuantas características coinciden
+      //lo ordenamos en base al n de coincidencias y devolvemos los tel en ese orden
+
+      var favs = this.$store.getters.currentUser.favoritos;
+      console.log(favs);
+      var c = [
+        "n_display_size",
+        "n_battery_size",
+        "n_ram",
+        "n_camera_pixels",
+        "expansion",
+        "os",
+        "brand_name",
+      ];
+      var caracteristicas = [];
+
+      //creamos u array con las característcas de los tel de favoritos sin repetir ordenados por las specs de c
+
+      c.forEach(function (elem) {
+        var x = [];
+        favs.forEach((element) => {
+          var i = element[elem];
+          if (!x.includes(i)) {
+            x.push(i);
+          }
+        });
+        caracteristicas.push(x);
+      });
+
+      //console.table(caracteristicas);
+
+      var parecidos = [];
+      //creamos un score para cada tel de data (los devueltos de la gama) sumando 1 si la spec del tel existe en el array carcteristicas anterior
+
+      data.forEach(function (obj, i) {
+        var a = [];
+        var count = 0;
+
+        c.forEach(function (element, index) {
+          if (caracteristicas[index].includes(obj[element])) {
+            count += 1;
+          }
+        });
+
+        a.push(obj);
+        a.push(count);
+        parecidos.push(a);
+      }); //obtenemos un obj con el par obj - score
+
+      //console.log(parecidos);
+
+      //lo ordenamos por el score desc
+      var sortedArray = parecidos.sort(function (a, b) {
+        return b[1] - a[1];
+      });
+      //console.log(sortedArray);
+
+      //extraemos los telfs que tengan el mayor score
+      var topParecidos = sortedArray[0][1];
+      var topParecidosArray = [];
+      sortedArray.forEach((element) => {
+        if (element[1] == topParecidos) {
+          topParecidosArray.push(element[0]);
+        }
+      });
+      //console.log(topParecidosArray);
+
+      //volvemos a ordenar por me_gusta y devolvemos
+      var clean = topParecidosArray.sort(
+        (a, b) => b["me_gusta"] - a["me_gusta"]
+      );
+
+      console.table(clean, ["me_gusta", orden]);
+
+      return clean;
+    },
+
+    irASmartPhone: function (SmartPhone) {
+      console.log("yendo al smartphone");
+      //console.log(SmartPhone);
+      this.$store.dispatch("setCurrentPhoneAction", SmartPhone);
+      this.$router.push({ path: "/SmartPhone" });
+      //console.log(this.$store.getters.currentPhone);
+    },
+
+    cambiarEstadoOnchange: function (s) {
+      this.s = true;
+    },
+
+    addAlHistorial: function (tel) {
+      var user = this.$store.getters.currentUser;
+
+      var yaesta = false;
+      user.historial.forEach((element) => {
+        if (element.id == tel.id) {
+          yaesta = true;
+        }
+      });
+
+      if (!yaesta) {
+        user.historial.push(tel);
+        console.log(query);
+        this.$store.dispatch("setCurrentUserAction", user);
+
+        var h = [];
+        user.historial.forEach((element) => {
+          h.push(element.id);
+        });
+
+        var query =
+          "MATCH (n:user{usuario: '" +
+          user.usuario +
+          "'}) SET n.histids = '" +
+          h +
+          "' RETURN n";
+        console.log(query);
 
         var request = new XMLHttpRequest();
 
@@ -889,28 +1136,9 @@ export default {
 
         if (request.status === 200) {
           var data = JSON.parse(request.responseText);
-          if (data.length > 10) {
-            data.length = 10;
-          }
-          this.telefonoRecomendado = data.shift();
-          this.otrasRecomendaciones = data;
-          this.preparado = true;
           console.log(data);
-
-          //return data;
         }
       }
-    },
-    irASmartPhone: function (SmartPhone) {
-      console.log("yendo al smartphone");
-      //console.log(SmartPhone);
-      this.$store.dispatch("setCurrentPhoneAction", SmartPhone);
-      this.$router.push({ path: "/SmartPhone" });
-      //console.log(this.$store.getters.currentPhone);
-    },
-
-    cambiarEstadoOnchange: function (s) {
-      this.s = true;
     },
 
     ejecutarQuerySliders: function (query, name) {
