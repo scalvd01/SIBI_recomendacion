@@ -122,7 +122,7 @@ export default {
       //console.log(this.$store.getters.currentPhone);
     },
     cargar: function () {
-      this.todos = this.peticion("match (n:SmartPhone) return n limit 30 ");
+      this.todos = this.peticion("match (n:SmartPhone) return n")// limit 30 
       this.marcas = this.peticion("match (n:brand_name) return n");
       this.mostrar = this.todos;
       this.cargado = true;

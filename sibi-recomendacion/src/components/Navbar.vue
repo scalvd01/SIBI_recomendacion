@@ -5,7 +5,8 @@
     <v-toolbar flat>
       <v-toolbar-title>
         <v-card flat color="transparent" router to="/">
-          <h1 class="font-weight-light">Phone REC·</h1>
+          <!--<h1 class="font-weight-light">Phone REC·</h1>-->
+          <v-img src="../../public/st1Recurso1.png" width="310"> </v-img>
         </v-card>
       </v-toolbar-title>
 
@@ -36,7 +37,7 @@
             v-on="on"
             height="60"
             outlined
-            class="overflow-x-visible"
+            class="overflow-x-visible mt-2"
             ><v-avatar>
               <img src="https://thispersondoesnotexist.com/image" />
             </v-avatar>

@@ -171,18 +171,28 @@ export default {
         if (data.length == 0) {
           this.snackbar = true;
         } else {
+          var u = data[0];
+          var f = u.favsids.split(",");
+          var h = u.histids.split(",");
 
-          var u = data[0]
-          var f = u.favsids.split(',')
-          var h = u.histids.split(',')
-
-          
-          f.forEach(id => {
-            u.favoritos.push(this.peticion("match (n:SmartPhone) where n.id='"+id+"' return n"))
-          });
-          h.forEach(id => {
-            u.historial.push(this.peticion("match (n:SmartPhone) where n.id='"+id+"' return n"))
-          });
+          if (u.favsids != "") {
+            f.forEach((id) => {
+              u.favoritos.push(
+                this.peticion(
+                  "match (n:SmartPhone) where n.id='" + id + "' return n"
+                )
+              );
+            });
+          }
+          if (u.histids != "") {
+            h.forEach((id) => {
+              u.historial.push(
+                this.peticion(
+                  "match (n:SmartPhone) where n.id='" + id + "' return n"
+                )
+              );
+            });
+          }
 
           this.$store.dispatch("setCurrentUserAction", u);
           this.$store.dispatch("changeStateLogueadoAction");
@@ -212,9 +222,8 @@ export default {
         var data = JSON.parse(request.responseText);
         //console.log(data[0])
 
-        return data[0]
+        return data[0];
       }
-      
     },
   },
   components: {},

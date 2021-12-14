@@ -381,7 +381,8 @@
         </v-col>
         <!---->
         <v-col v-if="preparado">
-          <v-card class="pa-6 mt-9">
+          <v-card class="pa-6 mt-9"
+            ><h2>Recomendación</h2>
             <v-container>
               <v-row>
                 <v-col cols="12">
@@ -923,19 +924,19 @@ export default {
         console.log("baja");
         orden = "device_score";
         query +=
-          "MATCH (n:SmartPhone) WHERE n.device_score<784 RETURN n ORDER BY n.device_score DESC  ";
+          "MATCH (n:SmartPhone) WHERE n.device_score<265 RETURN n ORDER BY n.device_score DESC  ";
       }
       if (val == 2) {
         console.log("media");
         orden = "device_score";
         query +=
-          "MATCH (n:SmartPhone) WHERE n.device_score>784 AND n.device_score<1459 RETURN n ORDER BY n.device_score DESC  ";
+          "MATCH (n:SmartPhone) WHERE n.device_score>265 AND n.device_score<497 RETURN n ORDER BY n.device_score DESC  ";
       }
       if (val == 3) {
         console.log("alta");
         orden = "device_score";
         query +=
-          "MATCH (n:SmartPhone) WHERE n.device_score>1459 RETURN n ORDER BY n.device_score DESC  ";
+          "MATCH (n:SmartPhone) WHERE n.device_score>497 RETURN n ORDER BY n.device_score DESC  ";
       }
       if (val == 4) {
         console.log("fotografía");
@@ -980,8 +981,8 @@ export default {
 
         //console.table(data, ["me_gusta", orden, "device_score",  "id"]);
 
-
         if (this.$store.getters.logueado) {
+          //cuando está logueado
           //QUITAR EL ! ES SOLO PARA PROBAR
           if (this.$store.getters.currentUser.favoritos.length != 0) {
             data = this.ordenarPorParecidoDeFavs(data, orden);
@@ -991,11 +992,16 @@ export default {
         if (data.length > 10) {
           data.length = 10;
         }
-        
+
+        if (val == 4 || val == 5 || val == 6 || val == 7) {
+          console.log("de los de uso");
+          //ordenar por score descendente, coger el orden del primero y meterle a el y a los que tengan su mismo orden en un array. ordenar ese array por el device_score descendente y ponerlo al princiìo de data, los que tienen menor orden irán despues
+        }
+
+        console.table(data, ["me_gusta", "device_score", orden]);
         this.telefonoRecomendado = data.shift();
         this.otrasRecomendaciones = data;
         this.preparado = true;
-        //console.log(data);
         if (this.$store.getters.logueado) {
           this.addAlHistorial(this.telefonoRecomendado);
         }
@@ -1038,7 +1044,7 @@ export default {
       //console.table(caracteristicas);
 
       var parecidos = [];
-      //creamos un score para cada tel de data (los devueltos de la gama) sumando 1 si la spec del tel existe en el array carcteristicas anterior
+      //creamos un score para cada tel de data (los devueltos de la gama o el uso) sumando 1 si la spec del tel existe en el array carcteristicas anterior
 
       data.forEach(function (obj, i) {
         var a = [];
