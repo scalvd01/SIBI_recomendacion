@@ -112,6 +112,7 @@ export default {
       var user = this.$store.getters.currentUser;
       this.usuario = user;
       this.favs = user.favoritos;
+      console.table(this.favs, ["me_gusta", "device_score", "name"]);
       this.historial = user.historial;
     },
     irASmartPhone: function (SmartPhone) {

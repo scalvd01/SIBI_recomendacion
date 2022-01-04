@@ -381,7 +381,7 @@
         </v-col>
         <!---->
         <v-col v-if="preparado">
-          <v-card class="pa-6 mt-9"
+          <v-card class="pa-6 mt-9" flat
             ><h2>Recomendación</h2>
             <v-container>
               <v-row>
@@ -813,6 +813,7 @@ export default {
           console.log("vacio");
           data = this.recomendacionCombinada(a);
         }
+        console.table(data, ["me_gusta", "device_score", "name"]);
         this.telefonoRecomendado = data.shift();
         this.otrasRecomendaciones = data;
         this.preparado = true;
@@ -996,9 +997,22 @@ export default {
         if (val == 4 || val == 5 || val == 6 || val == 7) {
           console.log("de los de uso");
           //ordenar por score descendente, coger el orden del primero y meterle a el y a los que tengan su mismo orden en un array. ordenar ese array por el device_score descendente y ponerlo al princiìo de data, los que tienen menor orden irán despues
+          var tops = [];
+          var ordenTop = data[0][orden];
+          var resto = [];
+          //console.log(ordenTop);
+          data.forEach(function (element, i) {
+            if (element[orden] == ordenTop) {
+              tops.push(element);
+            } else {
+              resto.push(element);
+            }
+          });
+          tops = tops.sort((a, b) => b["me_gusta"] - a["me_gusta"]);
+          data = tops.concat(resto);
         }
 
-        console.table(data, ["me_gusta", "device_score", orden]);
+        console.table(data, ["me_gusta", "device_score", orden, "name"]);
         this.telefonoRecomendado = data.shift();
         this.otrasRecomendaciones = data;
         this.preparado = true;
@@ -1041,7 +1055,7 @@ export default {
         caracteristicas.push(x);
       });
 
-      //console.table(caracteristicas);
+      console.table(caracteristicas);
 
       var parecidos = [];
       //creamos un score para cada tel de data (los devueltos de la gama o el uso) sumando 1 si la spec del tel existe en el array carcteristicas anterior
@@ -1084,7 +1098,7 @@ export default {
         (a, b) => b["me_gusta"] - a["me_gusta"]
       );
 
-      console.table(clean, ["me_gusta", orden]);
+      console.table(clean, ["me_gusta", orden, "name"]);
 
       return clean;
     },
