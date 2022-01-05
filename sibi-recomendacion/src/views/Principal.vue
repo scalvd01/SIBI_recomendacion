@@ -381,113 +381,104 @@
         </v-col>
         <!---->
         <v-col v-if="preparado">
-          <v-card class="pa-6 mt-9" flat
-            ><h2>Recomendación</h2>
-            <v-container>
-              <v-row>
-                <v-col cols="12">
-                  <v-card height="180">
-                    <div class="d-flex flex-no-wrap justify-space-between">
-                      <v-avatar class="ma-3" size="150" tile>
-                        <v-img
-                          :src="telefonoRecomendado.picture"
-                          contain
-                        ></v-img>
-                      </v-avatar>
-                      <v-col
-                        ><div>
-                          <v-card-title
-                            class="text-h5"
-                            v-text="telefonoRecomendado.name"
-                          ></v-card-title>
+          <h2 class="pl-2">Recomendación</h2>
+          <v-container>
+            <v-row>
+              <v-col cols="12">
+                <v-card height="180">
+                  <div class="d-flex flex-no-wrap justify-space-between">
+                    <v-avatar class="ma-3" size="150" tile>
+                      <v-img :src="telefonoRecomendado.picture" contain></v-img>
+                    </v-avatar>
+                    <v-col
+                      ><div>
+                        <v-card-title
+                          class="text-h5"
+                          v-text="telefonoRecomendado.name"
+                        ></v-card-title>
 
-                          <v-card-subtitle
-                            v-text="telefonoRecomendado.brand_name"
-                          ></v-card-subtitle>
+                        <v-card-subtitle
+                          v-text="telefonoRecomendado.brand_name"
+                        ></v-card-subtitle>
 
-                          <v-card-actions class="ml-2">
-                            <div>
-                              <v-btn
-                                color="success"
-                                text
-                                elevation="1"
-                                @click="irASmartPhone(telefonoRecomendado)"
-                              >
-                                ver teléfono
-                              </v-btn>
+                        <v-card-actions class="ml-2">
+                          <div>
+                            <v-btn
+                              color="success"
+                              text
+                              elevation="1"
+                              @click="irASmartPhone(telefonoRecomendado)"
+                            >
+                              ver teléfono
+                            </v-btn>
 
-                              <v-icon color="red"
-                                >mdi-cards-heart-outline</v-icon
-                              >
-                              <span>{{ telefonoRecomendado.me_gusta }}</span>
-                            </div>
-                          </v-card-actions>
-                        </div></v-col
-                      >
-                    </div>
-                  </v-card>
-                </v-col>
-              </v-row>
-            </v-container>
-            <v-expansion-panels class="px-3">
-              <v-expansion-panel>
-                <v-expansion-panel-header
-                  >Más recomendaciones</v-expansion-panel-header
+                            <v-icon color="red">mdi-cards-heart-outline</v-icon>
+                            <span>{{ telefonoRecomendado.me_gusta }}</span>
+                          </div>
+                        </v-card-actions>
+                      </div></v-col
+                    >
+                  </div>
+                </v-card>
+              </v-col>
+            </v-row>
+          </v-container>
+          <v-expansion-panels class="px-3">
+            <v-expansion-panel>
+              <v-expansion-panel-header
+                >Más recomendaciones</v-expansion-panel-header
+              >
+              <v-expansion-panel-content>
+                <v-card
+                  height="180"
+                  class="mb-3"
+                  v-for="(item, index) in otrasRecomendaciones"
+                  :key="index"
                 >
-                <v-expansion-panel-content>
-                  <v-card
-                    height="180"
-                    class="mb-3"
-                    v-for="(item, index) in otrasRecomendaciones"
-                    :key="index"
-                  >
-                    <div class="d-flex flex-no-wrap justify-space-between">
-                      <v-avatar class="ma-3" size="150" tile>
-                        <v-img
-                          :src="otrasRecomendaciones[index].picture"
-                          contain
-                        ></v-img>
-                      </v-avatar>
-                      <v-col
-                        ><div>
-                          <v-card-title
-                            class="text-h5"
-                            v-text="otrasRecomendaciones[index].name"
-                          ></v-card-title>
+                  <div class="d-flex flex-no-wrap justify-space-between">
+                    <v-avatar class="ma-3" size="150" tile>
+                      <v-img
+                        :src="otrasRecomendaciones[index].picture"
+                        contain
+                      ></v-img>
+                    </v-avatar>
+                    <v-col
+                      ><div>
+                        <v-card-title
+                          class="text-h5"
+                          v-text="otrasRecomendaciones[index].name"
+                        ></v-card-title>
 
-                          <v-card-subtitle
-                            v-text="otrasRecomendaciones[index].brand_name"
-                          ></v-card-subtitle>
+                        <v-card-subtitle
+                          v-text="otrasRecomendaciones[index].brand_name"
+                        ></v-card-subtitle>
 
-                          <v-card-actions class="ml-2">
-                            <div>
-                              <v-btn
-                                color="success"
-                                text
-                                elevation="1"
-                                @click="
-                                  irASmartPhone(otrasRecomendaciones[index])
-                                "
-                              >
-                                ver teléfono
-                              </v-btn>
+                        <v-card-actions class="ml-2">
+                          <div>
+                            <v-btn
+                              color="success"
+                              text
+                              elevation="1"
+                              @click="
+                                irASmartPhone(otrasRecomendaciones[index])
+                              "
+                            >
+                              ver teléfono
+                            </v-btn>
 
-                              <v-icon color="red"
-                                >mdi-cards-heart-outline</v-icon
-                              >
-                              <span>{{
-                                otrasRecomendaciones[index].me_gusta
-                              }}</span>
-                            </div>
-                          </v-card-actions>
-                        </div></v-col
-                      >
-                    </div>
-                  </v-card>
-                </v-expansion-panel-content>
-              </v-expansion-panel>
-            </v-expansion-panels>
-          </v-card>
+                            <v-icon color="red">mdi-cards-heart-outline</v-icon>
+                            <span>{{
+                              otrasRecomendaciones[index].me_gusta
+                            }}</span>
+                          </div>
+                        </v-card-actions>
+                      </div></v-col
+                    >
+                  </div>
+                </v-card>
+              </v-expansion-panel-content>
+            </v-expansion-panel>
+          </v-expansion-panels>
         </v-col>
       </v-row>
     </v-main>
