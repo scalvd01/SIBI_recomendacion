@@ -19,3 +19,9 @@ export default {
   store,
 };
 </script>
+
+<style>
+#app{
+  background-color:rgb(247, 247, 247);
+}
+</style>

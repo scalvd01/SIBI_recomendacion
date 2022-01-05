@@ -574,7 +574,7 @@ export default {
   }),
   methods: {
     printear: function (a) {
-      console.log(a);
+      //console.log(a);
     },
 
     recogerSliderData: function () {
@@ -598,12 +598,12 @@ export default {
       this.s5 = false;
       this.s6 = false;
       this.s7 = false;
-      console.log("steppers reset");
+      //console.log("steppers reset");
     },
 
     recomendar: function () {
       //recoger valores
-      console.log(
+      /*console.log(
         "Tamaño: " +
           this.tamPantallaTrueValue +
           "\nBatería: " +
@@ -618,9 +618,9 @@ export default {
           this.osTrueValue +
           "\nMarca: " +
           this.brandTrueValue
-      );
+      );*/
 
-      console.log(
+      /*console.log(
         "tam " +
           this.s1 +
           "\nbat " +
@@ -633,47 +633,47 @@ export default {
           this.s5 +
           "\nos/brand " +
           this.s6
-      );
+      );*/
 
       //formar query
       var a = "";
       if (this.s1) {
-        console.log("tam");
+        //console.log("tam");
         a +=
           "match (n:SmartPhone)-[:HAS_DISPLAY_SIZE]-(a) where a.n_display_size='" +
           this.tamPantallaTrueValue +
           "'  ";
       }
       if (this.s2) {
-        console.log("bat");
+        //console.log("bat");
         a +=
           "match (n:SmartPhone)-[:HAS_BATTERY]-(b) where b.capacidad='" +
           this.bateriaTrueValue +
           "'  ";
       }
       if (this.s3) {
-        console.log("ram");
+        //console.log("ram");
         a +=
           "match (n:SmartPhone)-[:HAS_RAM]-(c) where c.n_ram='" +
           this.ramTrueValue +
           "'  ";
       }
       if (this.s4) {
-        console.log("cam");
+        //console.log("cam");
         a +=
           "match (n:SmartPhone)-[:HAS_CAMERA_PIXELS]-(d) where d.n_camera_pixels='" +
           this.camaraTrueValue +
           "'  ";
       }
       if (this.s5) {
-        console.log("exp");
+        //console.log("exp");
         a +=
           "match (n:SmartPhone)-[:HAS]-(e) where e.Has_expansion='" +
           this.expansionTrueValueString +
           "'  ";
       }
       if (this.osTrueValue != "") {
-        console.log("os");
+        //console.log("os");
         var letr = ["f", "g", "h", "i", "j", "k"]; //por si se usa con multiple opción
         var aaa = this.osTrueValue + "";
         var lis = [];
@@ -690,7 +690,7 @@ export default {
         });
       }
       if (this.brandTrueValue != "") {
-        console.log("brand");
+        //console.log("brand");
         var letr1 = [
           "l",
           "m",
@@ -759,7 +759,7 @@ export default {
           "yyy",
           "zzz",
         ]; //por si se usa con multiple opción
-        console.log(letr1.length);
+        //console.log(letr1.length);
         var xxx = this.brandTrueValue + "";
         lis = xxx.split(",");
         lis.forEach(function (element, i) {
@@ -775,14 +775,14 @@ export default {
       }
 
       if (a.length == 0) {
-        console.log("no hay nada");
+        //console.log("no hay nada");
         a +=
           "MATCH (n:SmartPhone) RETURN n ORDER BY n.device_score DESC LIMIT 10";
       } else {
         a += "RETURN n ORDER BY n.device_score DESC LIMIT 10";
       }
 
-      console.log(a);
+      //console.log(a);
 
       //hacer peticion
 
@@ -801,16 +801,18 @@ export default {
         var data = JSON.parse(request.responseText);
 
         if (data.length == 0) {
-          console.log("vacio");
+          //console.log("vacio");
           data = this.recomendacionCombinada(a);
         }
+
+        console.log("Recomendación Avanzada");
         console.table(data, ["me_gusta", "device_score", "name"]);
         this.telefonoRecomendado = data.shift();
         this.otrasRecomendaciones = data;
         this.preparado = true;
-        console.log(data);
-        console.log(this.telefonoRecomendado);
-        console.log(this.otrasRecomendaciones);
+        //console.log(data);
+        //console.log(this.telefonoRecomendado);
+        //console.log(this.otrasRecomendaciones);
         if (this.$store.getters.logueado) {
           this.addAlHistorial(this.telefonoRecomendado);
         }
@@ -831,7 +833,7 @@ export default {
       });
 
       var nuevaQuery = aux1.join(" UNION ALL ").replace(/, ([^,]*)$/, " $1"); //para intercalar un union all entre todas las query menos en la ultima
-      console.log("ejecutando " + nuevaQuery);
+      //console.log("ejecutando " + nuevaQuery);
 
       //hacemos la peticion con la nueva query
       var request = new XMLHttpRequest();
@@ -903,8 +905,8 @@ export default {
 
           clean.length = 10;
         }
-        console.log("clean");
-        console.log(clean);
+        //console.log("clean");
+        //console.log(clean);
         return clean;
       }
     },
@@ -986,7 +988,7 @@ export default {
         }
 
         if (val == 4 || val == 5 || val == 6 || val == 7) {
-          console.log("de los de uso");
+          //console.log("de los de uso");
           //ordenar por score descendente, coger el orden del primero y meterle a el y a los que tengan su mismo orden en un array. ordenar ese array por el device_score descendente y ponerlo al princiìo de data, los que tienen menor orden irán despues
           var tops = [];
           var ordenTop = data[0][orden];
@@ -1015,13 +1017,13 @@ export default {
       }
     },
     ordenarPorParecidoDeFavs: function (data, orden) {
-      console.log("ordenarPorParecidoDeFavs");
+      //console.log("ordenarPorParecidoDeFavs");
 
       //primero conseguimos la lista de las características de los telefonos de fav según spec y hacer un obj con un numero de cuantas características coinciden
       //lo ordenamos en base al n de coincidencias y devolvemos los tel en ese orden
 
       var favs = this.$store.getters.currentUser.favoritos;
-      console.log(favs);
+      //console.log(favs);
       var c = [
         "n_display_size",
         "n_battery_size",
@@ -1095,7 +1097,7 @@ export default {
     },
 
     irASmartPhone: function (SmartPhone) {
-      console.log("yendo al smartphone");
+      //console.log("yendo al smartphone");
       //console.log(SmartPhone);
       this.$store.dispatch("setCurrentPhoneAction", SmartPhone);
       this.$router.push({ path: "/SmartPhone" });
@@ -1118,7 +1120,7 @@ export default {
 
       if (!yaesta) {
         user.historial.push(tel);
-        console.log(query);
+        //console.log(query);
         this.$store.dispatch("setCurrentUserAction", user);
 
         var h = [];
@@ -1132,7 +1134,7 @@ export default {
           "'}) SET n.histids = '" +
           h +
           "' RETURN n";
-        console.log(query);
+        //console.log(query);
 
         var request = new XMLHttpRequest();
 
@@ -1147,13 +1149,13 @@ export default {
 
         if (request.status === 200) {
           var data = JSON.parse(request.responseText);
-          console.log(data);
+          //console.log(data);
         }
       }
     },
 
     ejecutarQuerySliders: function (query, name) {
-      console.log("ejecutando " + query);
+      //console.log("ejecutando " + query);
       var request = new XMLHttpRequest();
       //console.log(JSON.stringify(query));
 
