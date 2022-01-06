@@ -142,8 +142,8 @@ export default {
   },
   methods: {
     mandarDatos: function () {
-      console.log("Nombre =", this.name);
-      console.log("Pass = ", this.password);
+      //console.log("Nombre =", this.name);
+      //console.log("Pass = ", this.password);
 
       var query =
         "MATCH (n:user) WHERE n.usuario='" +
@@ -152,7 +152,7 @@ export default {
         this.password +
         "' RETURN n";
 
-      console.log(query);
+      //console.log(query);
 
       var request = new XMLHttpRequest();
 
@@ -199,7 +199,7 @@ export default {
           this.$router.push({ path: "/" });
         }
 
-        console.log(data[0]);
+        //console.log(data[0]);
       }
     },
 

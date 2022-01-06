@@ -12,20 +12,20 @@ export default new Vuex.Store({
   mutations: {
     changeStateLogueado(state) {
       state.logueado = !state.logueado;
-      console.log("Estado logueado", state.logueado);
+      //console.log("Estado logueado", state.logueado);
     },
     setStateLogueado(state, data) {
       state.logueado = data;
-      console.log("Estado logueado", state.logueado);
+      //console.log("Estado logueado", state.logueado);
     },
     setCurrentPhone(state, data) {
       state.currentPhone = data;
-      console.log("current phone", state.currentPhone);
+      //console.log("current phone", state.currentPhone);
     },
     setCurrentUser(state, data) {
-      console.log(data)
+      //console.log(data)
       state.currentUser = data;
-      console.log("Current usuario", state.currentUser.nombre);
+      //console.log("Current usuario", state.currentUser.nombre);
     },
   },
   actions: {
