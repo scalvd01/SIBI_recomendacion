@@ -1,9 +1,8 @@
 # SIBI_recomendacion
 
 ![Phone REC](/sibi-recomendacion/public/st1Recurso1.png)
-Aplicación de sistema de recomendación de smartphones para SIBI
 
----
+Aplicación de sistema de recomendación de smartphones para SIBI
 
 ## Instrucciones
 Para probar la aplicación primero hay que descargar el repositorio y realiza los siguientes pasos:
@@ -29,4 +28,4 @@ Para probar la aplicación primero hay que descargar el repositorio y realiza lo
 ---
 
 
-Adjunto mi cuaderno de trabajo de [OSF](https://osf.io/duzt9/?view_only=e55bffcad7d4459485a22cfb04daad7e).
+Adjunto también mi cuaderno de trabajo de [OSF](https://osf.io/duzt9/?view_only=e55bffcad7d4459485a22cfb04daad7e).
