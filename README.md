@@ -2,7 +2,7 @@
 
 ![Phone REC](/sibi-recomendacion/public/st1Recurso1.png)
 
-Aplicación de sistema de recomendación de smartphones para SIBI
+Aplicación de sistema de recomendación de smartphones para la asignatura de Sistemas de Información y Business Intelligence
 
 ## Instrucciones
 Para probar la aplicación primero hay que descargar el repositorio y realiza los siguientes pasos:
